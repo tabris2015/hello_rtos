@@ -15,12 +15,14 @@ set(CMAKE_CXX_STANDARD 17)
 # Initialize the SDK
 pico_sdk_init()
 
-# Add your source files
-add_executable(${NAME}
-        src/main.cpp # <-- Add source files here!
-        )
 
-target_include_directories(${NAME} PRIVATE include)
+#include Libraries
+SET(FREERTOS_KERNEL_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/FreeRTOS-Kernel" CACHE STRING "Course Common Lib")
+SET(FREERTOS_CONFIG_FILE_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/port/FreeRTOS-Kernel" CACHE STRING "Local Config")
+include_directories("${FREERTOS_CONFIG_FILE_DIRECTORY}")
+include(FreeRTOS_Kernel_import.cmake)
+
+add_subdirectory(src)
 
 # include libraries
 include(common/pimoroni_bus)
@@ -33,24 +35,6 @@ include(drivers/encoder/encoder)
 include(libraries/bitmap_fonts/bitmap_fonts)
 include(libraries/hershey_fonts/hershey_fonts)
 include(libraries/pico_explorer/pico_explorer)
-
-
-# Don't forget to link the libraries you need!
-target_link_libraries(${NAME}
-        pico_stdlib
-        pico_explorer
-        pico_graphics
-        st7789
-        button
-        motor
-        analog
-        encoder
-        )
-
-# create map/bin/hex file etc.
-pico_add_extra_outputs(${NAME})
-pico_enable_stdio_usb(${NAME} 0)
-pico_enable_stdio_uart(${NAME} 1)
 
 # Set up files for the release packages
 install(FILES
